@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Final Jeopardy Clues for <?php print "$_GET['month']"; ?></title>
+    <title>Final Jeopardy Clues for <?php print("$_GET['month']"); ?></title>
     <style>
         .hidden-text {
             display: none;
