@@ -12,25 +12,40 @@
 
 <body>
 <?php
-$url = "http://thejeopardyfan.com/2023/05/final-jeopardy-5-11-2023.html";
-$fileContent = file_get_contents($url);
-$lines = explode(PHP_EOL, $fileContent);
-for ($i = 0; $i < count($lines); $i++) {
-	if(preg_match('/Final Jeopardy \(in the category \<strong\>/', $lines[$i])) { 
-		$category = $lines[$i]; 
-		$clue =  $lines[$i+1]; 
-	}
-	if(preg_match('/Correct response:/', $lines[$i])) { 
-		$answer = $lines[$i];
-		break;
-	}
+if(isset($_GET['year'])) {
+	$year = $_GET['year'];
+} else {
+	$year = date('Y');
 }
+if(isset($_GET['month'])) {
+	$month = $_GET['month'];
+} else {
+	$month = date('n');
+}
+$longMonth = $month;
+if ($month < 10) { $longMonth = "0" . $month; }
+for ($day = 1 ; $day < 32 ; $day++) {
+	$url = "http://thejeopardyfan.com/" . $year . "/" . $longMonth . "/final-jeopardy-" . $month . "-" . $day . "-" . $year . ".html";
+	$fileContent = file_get_contents($url);
+	$lines = explode(PHP_EOL, $fileContent);
+	for ($i = 0; $i < count($lines); $i++) {
+		$answer = "";
+		if(preg_match('/Final Jeopardy \(in the category \<strong\>/', $lines[$i])) { 
+			$category = $lines[$i]; 
+			$clue =  $lines[$i+1]; 
+		}
+		if(preg_match('/Correct response:/', $lines[$i])) { 
+			$answer = $lines[$i];
+			break;
+		}
+	}
+	if ($answer == "") { continue; }
 	echo $category;
 	echo $clue;
 	$pattern = "/<h2>Correct response: <span style=\"color: red;\">(.*)<\/span><\/h2>/";
-    	echo "<button onclick=\"toggleText('hiddenText1')\">Answer</button>";
-	echo "<h2><p class=\"hidden-text\" id=\"hiddenText1\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
-
+    	echo "<button onclick=\"toggleText('hiddenText" . $day . "')\">Answer</button>";
+	echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
+}
 ?>
 
     <script>
