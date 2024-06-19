@@ -26,8 +26,8 @@ if(isset($_GET['day'])) {
 	$min = $_GET['day'];
 	$max = $min;
 } else {
-	$min = 1;
-	$max = 31;
+	$min = date('j');
+	$max = $min; 
 }
 $longMonth = $month;
 if ($month < 10) { $longMonth = "0" . $month; }
@@ -47,11 +47,20 @@ for ($day = $min ; $day < $max + 1 ; $day++) {
 		}
 	}
 	if ($answer == "") { continue; }
-	echo $category;
+	echo preg_replace("/today.*Final Jeopardy/", "the Final Jeopardy", $category);
 	echo $clue;
 	$pattern = "/.*Correct response: <span style=\"color: red;\">(.*)<\/span>.*/";
     	echo "<button onclick=\"toggleText('hiddenText" . $day . "')\">Answer</button>";
 	echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
+}
+if ($min == $max) {
+	echo "<a href=\"index.php?day=" . ($min - 1) . "\">";
+	echo "\t<button>Previous</button>";
+	echo "</a>";
+	echo "<br>";
+	echo "<a href=\"index.php?day=" . ($min  + 1) . "\">";
+	echo "\t<button>Next</button>";
+	echo "</a>";
 }
 ?>
 
