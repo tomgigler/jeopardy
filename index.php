@@ -22,9 +22,16 @@ if(isset($_GET['month'])) {
 } else {
 	$month = date('n');
 }
+if(isset($_GET['day'])) {
+	$min = $_GET['day'];
+	$max = $min;
+} else {
+	$min = 1;
+	$max = 31;
+}
 $longMonth = $month;
 if ($month < 10) { $longMonth = "0" . $month; }
-for ($day = 1 ; $day < 32 ; $day++) {
+for ($day = $min ; $day < $max + 1 ; $day++) {
 	$url = "http://thejeopardyfan.com/" . $year . "/" . $longMonth . "/final-jeopardy-" . $month . "-" . $day . "-" . $year . ".html";
 	$fileContent = file_get_contents($url);
 	$lines = explode(PHP_EOL, $fileContent);
@@ -42,7 +49,7 @@ for ($day = 1 ; $day < 32 ; $day++) {
 	if ($answer == "") { continue; }
 	echo $category;
 	echo $clue;
-	$pattern = "/<h2>Correct response: <span style=\"color: red;\">(.*)<\/span><\/h2>/";
+	$pattern = "/.*Correct response: <span style=\"color: red;\">(.*)<\/span>.*/";
     	echo "<button onclick=\"toggleText('hiddenText" . $day . "')\">Answer</button>";
 	echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
 }
