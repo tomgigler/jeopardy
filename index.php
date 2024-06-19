@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Final Jeopardy Clues for <?php print("$_GET['month']"); ?></title>
+    <title>Final Jeopardy Clues for <?php echo htmlspecialchars($_GET['month']) . "/2024"; ?></title>
     <style>
         .hidden-text {
             display: none;
@@ -12,15 +11,27 @@
 </head>
 
 <body>
-    <p>Here&#8217;s today&#8217;s Final Jeopardy (in the category <strong>Rhyme Time: Opera Version</strong>) for Wednesday, May 8, 2024 <em>(Season 40, Game 173)</em>:</p>
-    <h2><span style="color: red;">Telling the story of a duke, a jester &#038; the jester&#8217;s daughter, it was written by poet Francesco Maria Piave</span></h2>
-    <button onclick="toggleText('hiddenText1')">Answer</button>
-    <h2><p class="hidden-text" id="hiddenText1">Correct response: What is the Rigoletto libretto?</p></h2>
+<?php
+$url = "http://thejeopardyfan.com/2023/05/final-jeopardy-5-11-2023.html";
+$fileContent = file_get_contents($url);
+$lines = explode(PHP_EOL, $fileContent);
+for ($i = 0; $i < count($lines); $i++) {
+	if(preg_match('/Final Jeopardy \(in the category \<strong\>/', $lines[$i])) { 
+		$category = $lines[$i]; 
+		$clue =  $lines[$i+1]; 
+	}
+	if(preg_match('/Correct response:/', $lines[$i])) { 
+		$answer = $lines[$i];
+		break;
+	}
+}
+	echo $category;
+	echo $clue;
+	$pattern = "/<h2>Correct response: <span style=\"color: red;\">(.*)<\/span><\/h2>/";
+    	echo "<button onclick=\"toggleText('hiddenText1')\">Answer</button>";
+	echo "<h2><p class=\"hidden-text\" id=\"hiddenText1\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
 
-    <p>Here&#8217;s today&#8217;s Final Jeopardy (in the category <strong>1980s Fads</strong>) for Thursday, May 9, 2024 <em>(Season 40, Game 174)</em>:</p>
-    <h2><span style="color: red;">A Nov. 29 1983 N.Y. Times article about these used &#8220;near-riot&#8221;, &#8220;adoptable&#8221;, &#8220;waiting for 8 hours&#8221; &#038; &#8220;my life (is) in danger&#8221;</span></h2>
-    <button onclick="toggleText('hiddenText2')">Answer</button>
-    <h2><p class="hidden-text" id="hiddenText2">Correct response: What are Cabbage Patch Kids?</p></h2>
+?>
 
     <script>
         function toggleText(elementId) {
