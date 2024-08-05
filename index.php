@@ -23,45 +23,75 @@ if(isset($_GET['month'])) {
 	$month = date('n');
 }
 if(isset($_GET['day'])) {
-	$min = $_GET['day'];
-	$max = $min;
+	$day = $_GET['day'];
 } else {
-	$min = date('j');
-	$max = $min; 
+	$day = date('j');
 }
 $longMonth = $month;
 if ($month < 10) { $longMonth = "0" . $month; }
-for ($day = $min ; $day < $max + 1 ; $day++) {
-	$url = "http://thejeopardyfan.com/" . $year . "/" . $longMonth . "/final-jeopardy-" . $month . "-" . $day . "-" . $year . ".html";
-	$fileContent = file_get_contents($url);
-	$lines = explode(PHP_EOL, $fileContent);
-	for ($i = 0; $i < count($lines); $i++) {
-		$answer = "";
-		if(preg_match('/Final Jeopardy \(in the category \<strong\>/', $lines[$i])) { 
-			$category = $lines[$i]; 
-			$clue =  $lines[$i+1]; 
-		}
-		if(preg_match('/Correct response:/', $lines[$i])) { 
-			$answer = $lines[$i];
-			break;
-		}
+$url = "http://thejeopardyfan.com/" . $year . "/" . $longMonth . "/final-jeopardy-" . $month . "-" . $day . "-" . $year . ".html";
+$fileContent = file_get_contents($url);
+$lines = explode(PHP_EOL, $fileContent);
+for ($i = 0; $i < count($lines); $i++) {
+	$answer = "";
+	if(preg_match('/Final Jeopardy \(in the category \<strong\>/', $lines[$i])) { 
+		$category = $lines[$i]; 
+		$clue =  $lines[$i+1]; 
 	}
-	if ($answer == "") { continue; }
-	echo preg_replace("/today.*Final Jeopardy/", "the Final Jeopardy", $category);
-	echo $clue;
-	$pattern = "/.*Correct response: <span style=\"color: ?red;?\">(.*)<\/span>.*/";
-    	echo "<button onclick=\"toggleText('hiddenText" . $day . "')\">Answer</button>";
-	echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
+	if(preg_match('/Correct response:/', $lines[$i])) { 
+		$answer = $lines[$i];
+		break;
+	}
 }
-if ($min == $max) {
-	echo "<a href=\"index.php?year=" . $year . "&month=" . $month . "&day=" . ($min - 1) . "\">";
-	echo "\t<button>Previous</button>";
-	echo "</a>";
+echo preg_replace("/today.*Final Jeopardy/", "the Final Jeopardy", $category);
+echo $clue;
+$pattern = "/.*Correct response: <span style=\"color: ?red;?\">(.*)<\/span>.*/";
+
+if($answer != '') {
+   	echo "<button onclick=\"toggleText('hiddenText" . $day . "')\">Answer</button>";
+echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
+} else {
+	$date = new DateTime();
+	$date->setDate($year, $month, $day);
+	echo $date->format('l, F j, Y');
 	echo "<br>";
-	echo "<a href=\"index.php?year=" . $year . "&month=" . $month . "&day=" . ($min  + 1) . "\">";
-	echo "\t<button>Next</button>";
-	echo "</a>";
 }
+
+$last_year = $year;
+$last_month = $month;
+$last_day = $day - 1;
+if($last_day < 1) {
+	$last_month--;
+	if(in_array($last_month, array('2', '4', '6', '9', '11'))) {
+		$last_day = 30;
+	} else {
+		$last_day = 31;
+	}
+	if($last_month < 1) {
+		$last_month = 12;
+		$last_year--;
+	}
+}
+
+$next_year = $year;
+$next_month = $month;
+$next_day = $day + 1;
+if($next_day > 31 || $next_day > 30 && in_array($month, array('2', '4', '6', '9', '11'))) {
+	$next_day = 1;
+	$next_month++;
+	if($next_month > 12) {
+		$next_month = 1;
+		$next_year++;
+	}
+}
+
+echo "<a href=\"index.php?year=" . $last_year . "&month=" . $last_month . "&day=" . $last_day . "\">";
+echo "\t<button>Previous</button>";
+echo "</a>";
+echo "<br>";
+echo "<a href=\"index.php?year=" . $next_year . "&month=" . $next_month . "&day=" . $next_day . "\">";
+echo "\t<button>Next</button>";
+echo "</a>";
 ?>
 
     <script>
