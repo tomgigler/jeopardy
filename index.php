@@ -49,7 +49,7 @@ for ($day = $min ; $day < $max + 1 ; $day++) {
 	if ($answer == "") { continue; }
 	echo preg_replace("/today.*Final Jeopardy/", "the Final Jeopardy", $category);
 	echo $clue;
-	$pattern = "/.*Correct response: <span style=\"color: red;\">(.*)<\/span>.*/";
+	$pattern = "/.*Correct response: <span style=\"color: ?red;?\">(.*)<\/span>.*/";
     	echo "<button onclick=\"toggleText('hiddenText" . $day . "')\">Answer</button>";
 	echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
 }
