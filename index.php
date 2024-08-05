@@ -54,11 +54,11 @@ for ($day = $min ; $day < $max + 1 ; $day++) {
 	echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
 }
 if ($min == $max) {
-	echo "<a href=\"index.php?day=" . ($min - 1) . "\">";
+	echo "<a href=\"index.php?year=" . $year . "&month=" . $month . "&day=" . ($min - 1) . "\">";
 	echo "\t<button>Previous</button>";
 	echo "</a>";
 	echo "<br>";
-	echo "<a href=\"index.php?day=" . ($min  + 1) . "\">";
+	echo "<a href=\"index.php?year=" . $year . "&month=" . $month . "&day=" . ($min  + 1) . "\">";
 	echo "\t<button>Next</button>";
 	echo "</a>";
 }
