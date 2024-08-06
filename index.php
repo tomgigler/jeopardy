@@ -12,24 +12,23 @@
 
 <body>
 <?php
-if(isset($_GET['year'])) {
-	$year = $_GET['year'];
-} else {
-	$year = date('Y');
+function isValidDate($date, $format = 'Y-m-d') {
+	// Create a DateTime object from the given date string
+	$dateTime = DateTime::createFromFormat($format, $date);
+
+	// Check if the date was successfully created and if it matches the expected format
+	return $dateTime && $dateTime->format($format) === $date;
 }
-if(isset($_GET['month'])) {
-	$month = $_GET['month'];
+
+if (isset($_GET['date'])) {
+	$dateString = $_GET['date'];
 } else {
-	$month = date('n');
+	$today = new DateTime();
+	$dateString = $today->format('Y-m-d');
 }
-if(isset($_GET['day'])) {
-	$day = $_GET['day'];
-} else {
-	$day = date('j');
-}
-$longMonth = $month;
-if ($month < 10) { $longMonth = "0" . $month; }
-$url = "http://thejeopardyfan.com/" . $year . "/" . $longMonth . "/final-jeopardy-" . $month . "-" . $day . "-" . $year . ".html";
+$today = DateTime::createFromFormat('Y-m-d', $dateString);
+
+$url = "http://thejeopardyfan.com/" . $today->format('Y') . "/" . $today->format('m') . "/final-jeopardy-" . $today->format('n') . "-" . $today->format('j') . "-" . $today->format('Y') . ".html";
 $fileContent = file_get_contents($url);
 $lines = explode(PHP_EOL, $fileContent);
 for ($i = 0; $i < count($lines); $i++) {
@@ -51,45 +50,31 @@ if($answer != '') {
    	echo "<button onclick=\"toggleText('hiddenText" . $day . "')\">Answer</button>";
 echo "<h2><p class=\"hidden-text\" id=\"hiddenText" . $day . "\">Correct response: " . preg_replace($pattern, "$1", $answer) . "</p></h2>";
 } else {
-	$date = new DateTime();
-	$date->setDate($year, $month, $day);
-	echo $date->format('l, F j, Y');
+	echo $today->format('l, F j, Y');
 	echo "<br>";
 }
 
-$last_year = $year;
-$last_month = $month;
-$last_day = $day - 1;
-if($last_day < 1) {
-	$last_month--;
-	if(in_array($last_month, array('2', '4', '6', '9', '11'))) {
-		$last_day = 30;
-	} else {
-		$last_day = 31;
-	}
-	if($last_month < 1) {
-		$last_month = 12;
-		$last_year--;
-	}
+$today = DateTime::createFromFormat('Y-m-d', $dateString);
+
+// Find tomorrow
+$tomorrow = clone $today;
+$tomorrow->modify('+1 day');
+while($tomorrow->format('l') == 'Saturday' || $tomorrow->format('l') == 'Sunday') {
+	$tomorrow->modify('+1 day');
 }
 
-$next_year = $year;
-$next_month = $month;
-$next_day = $day + 1;
-if($next_day > 31 || $next_day > 30 && in_array($month, array('2', '4', '6', '9', '11'))) {
-	$next_day = 1;
-	$next_month++;
-	if($next_month > 12) {
-		$next_month = 1;
-		$next_year++;
-	}
+// Find yesterday
+$yesterday = clone $today;
+$yesterday->modify('-1 day');
+while($yesterday->format('l') == 'Saturday' || $yesterday->format('l') == 'Sunday') {
+	$yesterday->modify('-1 day');
 }
 
-echo "<a href=\"index.php?year=" . $last_year . "&month=" . $last_month . "&day=" . $last_day . "\">";
+echo "<a href=\"index.php?date=".$yesterday->format('Y-m-d')."\">";
 echo "\t<button>Previous</button>";
 echo "</a>";
 echo "<br>";
-echo "<a href=\"index.php?year=" . $next_year . "&month=" . $next_month . "&day=" . $next_day . "\">";
+echo "<a href=\"index.php?date=".$tomorrow->format('Y-m-d')."\">";
 echo "\t<button>Next</button>";
 echo "</a>";
 ?>
@@ -106,4 +91,3 @@ echo "</a>";
     </script>
 </body>
 </html>
-
